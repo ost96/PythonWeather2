@@ -119,9 +119,75 @@ class MainWindow(Ui_MainWindow):
         self.temperatureLabel.setText("%.1f °C" % weather['main']['temp'])
         self.pressureLabel.setText("%d" % weather['main']['pressure'])
         self.humidityLabel.setText("%d" % weather['main']['humidity'])
+
         self.humidityVariable = weather['main']['humidity']
+        self.cloudVariable = weather['clouds']['all']
+        self.windSpeedVariable = weather['wind']['speed']
+        self.tempVariable = weather['main']['temp']
+        self.pressureVariable = weather['main']['pressure']
 
         self.cubeSource.SetZLength(self.humidityVariable * 2) # DZIWNA SPRAWA: ZADZWON / NAPISZ TO WYTŁUMACZE SKĄD TO *2
+        self.sphere1.SetRadius(self.cloudVariable/4)
+
+        if self.windSpeedVariable < 2:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind1"))
+        elif self.windSpeedVariable < 4:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind2"))
+        elif self.windSpeedVariable < 6:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind3"))
+        elif self.windSpeedVariable < 8:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind4"))
+        elif self.windSpeedVariable < 10:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind5"))
+        elif self.windSpeedVariable < 12:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind6"))
+        elif self.windSpeedVariable < 14:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind7"))
+        else:
+            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind8"))
+
+        if self.tempVariable < -15:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp1"))
+        elif self.tempVariable < -10:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp2"))
+        elif self.tempVariable < -5:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp3"))
+        elif self.tempVariable < 0:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp4"))
+        elif self.tempVariable < 5:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp5"))
+        elif self.tempVariable < 10:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp6"))
+        elif self.tempVariable < 15:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp7"))
+        elif self.tempVariable < 20:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp8"))
+        elif self.tempVariable < 25:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp9"))
+        else:
+            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp10"))
+
+        if self.pressureVariable < 950:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure1"))
+        elif self.pressureVariable < 960:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure2"))
+        elif self.pressureVariable < 970:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure3"))
+        elif self.pressureVariable < 980:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure4"))
+        elif self.pressureVariable < 990:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure5"))
+        elif self.pressureVariable < 1000:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure6"))
+        elif self.pressureVariable < 1010:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure7"))
+        elif self.pressureVariable < 1020:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure8"))
+        elif self.pressureVariable < 1030:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure9"))
+        else:
+            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure10"))
+
 
         self.render_window.Render()
 
