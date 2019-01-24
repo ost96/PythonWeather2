@@ -32,7 +32,7 @@ class WorkerSignals(QObject):
     '''
     finished = pyqtSignal()
     error = pyqtSignal(str)
-    result = pyqtSignal(dict, dict)
+    result = pyqtSignal(dict, dict, dict, dict, dict)
 
 
 class WeatherWorker(QRunnable):
@@ -42,14 +42,29 @@ class WeatherWorker(QRunnable):
     signals = WorkerSignals()
     is_interrupted = False
 
-    def __init__(self, location):
+    def __init__(self, location, location2, location3, location4):
         super(WeatherWorker, self).__init__()
         self.location = location
+        self.location2 = location2
+        self.location3 = location3
+        self.location4 = location4
 
     def run(self):
         try:
             params = dict(
                 q=self.location,
+                appid=args.appid
+            )
+            params2 = dict(
+                q=self.location2,
+                appid=args.appid
+            )
+            params3 = dict(
+                q=self.location3,
+                appid=args.appid
+            )
+            params4 = dict(
+                q=self.location4,
                 appid=args.appid
             )
 
@@ -62,8 +77,22 @@ class WeatherWorker(QRunnable):
                 r = requests.get(url)
                 weather = json.loads(r.text)
                 print(weather)
-                # with open('warsaw_weather.json', 'w') as f:
-                #     f.write(r.text)
+
+                url2 = 'http://api.openweathermap.org/data/2.5/weather?%s&units=metric' % urlencode(params2)
+                r2 = requests.get(url2)
+                weather2 = json.loads(r2.text)
+                print(weather2)
+
+                url3 = 'http://api.openweathermap.org/data/2.5/weather?%s&units=metric' % urlencode(params3)
+                r3 = requests.get(url3)
+                weather3 = json.loads(r3.text)
+                print(weather3)
+
+                url4 = 'http://api.openweathermap.org/data/2.5/weather?%s&units=metric' % urlencode(params4)
+                r4 = requests.get(url4)
+                weather4 = json.loads(r4.text)
+                print(weather4)
+
 
             # Check if we had a failure (the forecast will fail in the same way).
             if weather['cod'] != 200:
@@ -81,7 +110,7 @@ class WeatherWorker(QRunnable):
             # with open('warsaw_forecast.json', 'w') as f:
             #     f.write(r.text)
 
-            self.signals.result.emit(weather, forecast)
+            self.signals.result.emit(weather, weather2, weather3, weather4, forecast)
 
         except Exception as e:
             self.signals.error.emit(str(e))
@@ -103,91 +132,133 @@ class MainWindow(Ui_MainWindow):
 
         self.show()
 
+
     def alert(self, message):
         alert = QMessageBox.warning(self, "Warning", message)
 
 
     def update_weather(self):
-        worker = WeatherWorker("Warsaw")
+        worker = WeatherWorker("Warsaw","Krakow","Poznan, Pl","Gdansk")
+
         worker.signals.result.connect(self.weather_result)
+
         worker.signals.error.connect(self.alert)
         self.threadpool.start(worker)
 
 
-    def weather_result(self, weather, forecasts):
+    def weather_result(self, weather, weather2, weather3, weather4, forecasts):
         self.windLabel.setText("%.2f m/s" % weather['wind']['speed'])
         self.temperatureLabel.setText("%.1f °C" % weather['main']['temp'])
         self.pressureLabel.setText("%d" % weather['main']['pressure'])
         self.humidityLabel.setText("%d" % weather['main']['humidity'])
 
-        self.humidityVariable = weather['main']['humidity']
-        self.cloudVariable = weather['clouds']['all']
-        self.windSpeedVariable = weather['wind']['speed']
-        self.tempVariable = weather['main']['temp']
-        self.pressureVariable = weather['main']['pressure']
+        for i in range (1,5):
+            if i == 1:
+                humidityVariable = weather['main']['humidity']
+                cloudVariable = weather['clouds']['all']
+                windSpeedVariable = weather['wind']['speed']
+                tempVariable = weather['main']['temp']
+                pressureVariable = weather['main']['pressure']
+                cubeSource = self.cubeSource
+                sphere = self.sphere1
+                coneActor = self.coneActor
+                tempActor = self.tempActor
+                pressActor = self.pressActor
+            elif i ==2:
+                humidityVariable = weather2['main']['humidity']
+                cloudVariable = weather2['clouds']['all']
+                windSpeedVariable = weather2['wind']['speed']
+                tempVariable = weather2['main']['temp']
+                pressureVariable = weather2['main']['pressure']
+                cubeSource = self.cubeSource2
+                sphere = self.sphere2
+                coneActor = self.coneActor2
+                tempActor = self.tempActor2
+                pressActor = self.pressActor2
+            elif i ==3:
+                humidityVariable = weather3['main']['humidity']
+                cloudVariable = weather3['clouds']['all']
+                windSpeedVariable = weather3['wind']['speed']
+                tempVariable = weather3['main']['temp']
+                pressureVariable = weather3['main']['pressure']
+                cubeSource = self.cubeSource3
+                sphere = self.sphere3
+                coneActor = self.coneActor3
+                tempActor = self.tempActor3
+                pressActor = self.pressActor3
+            elif i ==4:
+                humidityVariable = weather4['main']['humidity']
+                cloudVariable = weather4['clouds']['all']
+                windSpeedVariable = weather4['wind']['speed']
+                tempVariable = weather4['main']['temp']
+                pressureVariable = weather4['main']['pressure']
+                cubeSource = self.cubeSource4
+                sphere = self.sphere4
+                coneActor = self.coneActor4
+                tempActor = self.tempActor4
+                pressActor = self.pressActor4
 
-        self.cubeSource.SetZLength(self.humidityVariable * 2) # DZIWNA SPRAWA: ZADZWON / NAPISZ TO WYTŁUMACZE SKĄD TO *2
-        self.sphere1.SetRadius(self.cloudVariable/4)
+            cubeSource.SetZLength(humidityVariable * 2)  # DZIWNA SPRAWA: ZADZWON / NAPISZ TO WYTŁUMACZE SKĄD TO *2
+            sphere.SetRadius(cloudVariable / 4)
 
-        if self.windSpeedVariable < 2:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind1"))
-        elif self.windSpeedVariable < 4:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind2"))
-        elif self.windSpeedVariable < 6:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind3"))
-        elif self.windSpeedVariable < 8:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind4"))
-        elif self.windSpeedVariable < 10:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind5"))
-        elif self.windSpeedVariable < 12:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind6"))
-        elif self.windSpeedVariable < 14:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind7"))
-        else:
-            self.coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind8"))
+            if windSpeedVariable < 2:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind1"))
+            elif windSpeedVariable < 4:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind2"))
+            elif windSpeedVariable < 6:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind3"))
+            elif windSpeedVariable < 8:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind4"))
+            elif windSpeedVariable < 10:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind5"))
+            elif windSpeedVariable < 12:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind6"))
+            elif windSpeedVariable < 14:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind7"))
+            else:
+                coneActor.GetProperty().SetColor(self.cols.GetColor3d("wind8"))
 
-        if self.tempVariable < -15:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp1"))
-        elif self.tempVariable < -10:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp2"))
-        elif self.tempVariable < -5:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp3"))
-        elif self.tempVariable < 0:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp4"))
-        elif self.tempVariable < 5:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp5"))
-        elif self.tempVariable < 10:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp6"))
-        elif self.tempVariable < 15:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp7"))
-        elif self.tempVariable < 20:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp8"))
-        elif self.tempVariable < 25:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp9"))
-        else:
-            self.tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp10"))
+            if tempVariable < -15:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp1"))
+            elif tempVariable < -10:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp2"))
+            elif tempVariable < -5:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp3"))
+            elif tempVariable < 0:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp4"))
+            elif tempVariable < 5:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp5"))
+            elif tempVariable < 10:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp6"))
+            elif tempVariable < 15:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp7"))
+            elif tempVariable < 20:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp8"))
+            elif tempVariable < 25:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp9"))
+            else:
+                tempActor.GetProperty().SetColor(self.cols.GetColor3d("temp10"))
 
-        if self.pressureVariable < 950:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure1"))
-        elif self.pressureVariable < 960:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure2"))
-        elif self.pressureVariable < 970:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure3"))
-        elif self.pressureVariable < 980:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure4"))
-        elif self.pressureVariable < 990:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure5"))
-        elif self.pressureVariable < 1000:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure6"))
-        elif self.pressureVariable < 1010:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure7"))
-        elif self.pressureVariable < 1020:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure8"))
-        elif self.pressureVariable < 1030:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure9"))
-        else:
-            self.pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure10"))
-
+            if pressureVariable < 950:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure1"))
+            elif pressureVariable < 960:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure2"))
+            elif pressureVariable < 970:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure3"))
+            elif pressureVariable < 980:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure4"))
+            elif pressureVariable < 990:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure5"))
+            elif pressureVariable < 1000:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure6"))
+            elif pressureVariable < 1010:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure7"))
+            elif pressureVariable < 1020:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure8"))
+            elif pressureVariable < 1030:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure9"))
+            else:
+                pressActor.GetProperty().SetColor(self.cols.GetColor3d("pressure10"))
 
         self.render_window.Render()
 
