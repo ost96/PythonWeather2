@@ -46,6 +46,11 @@ class Ui_MainWindow(QWidget):
         self.pushButton.setObjectName("pushButton")
         hbox1.addWidget(self.pushButton)
 
+        hbox10 = QHBoxLayout()
+
+        lbl = QLabel("Forecaster notes (current weather in Warsaw): ")
+        hbox10.addWidget(lbl)
+
         hbox3 = QHBoxLayout()
 
         lbl = QLabel("Humidity: ")
@@ -85,6 +90,43 @@ class Ui_MainWindow(QWidget):
         self.windLabel.setText("")
         self.windLabel.setObjectName("windLabel")
         hbox6.addWidget(self.windLabel)
+
+        hbox9 = QHBoxLayout()
+
+        lbl = QLabel("Select weather data to display on map: ")
+        hbox9.addWidget(lbl)
+
+        # Buttons
+        hbox7 = QHBoxLayout()
+
+        lbl = QLabel("Temperature ")
+        hbox7.addWidget(lbl)
+        self.button1 = QCheckBox()
+        hbox7.addWidget(self.button1)
+
+        lbl = QLabel("  Pressure ")
+        hbox7.addWidget(lbl)
+        self.button2 = QCheckBox()
+        hbox7.addWidget(self.button2)
+
+        lbl = QLabel("  Clouds ")
+        hbox7.addWidget(lbl)
+        self.button3 = QCheckBox()
+        hbox7.addWidget(self.button3)
+        hbox7.addStretch()
+
+        hbox8 = QHBoxLayout()
+
+        lbl = QLabel("Wind ")
+        hbox8.addWidget(lbl)
+        self.button4 = QCheckBox()
+        hbox8.addWidget(self.button4)
+
+        lbl = QLabel("  Humidity ")
+        hbox8.addWidget(lbl)
+        self.button5 = QCheckBox()
+        hbox8.addWidget(self.button5)
+        hbox8.addStretch()
 
         # VTK PART
         #colors
@@ -444,30 +486,8 @@ class Ui_MainWindow(QWidget):
 
         self.ren.AddActor(image_actor)
 
-        #weather data actors
-        self.ren.AddActor(self.humidityActor)
-        self.ren.AddActor(self.coneActor)
-        self.ren.AddActor(self.cloudActor)
-        self.ren.AddActor(self.tempActor)
-        self.ren.AddActor(self.pressActor)
+        #weather data actors are added in ApiConnection class in buttons methods
 
-        self.ren.AddActor(self.humidityActor2)
-        self.ren.AddActor(self.coneActor2)
-        self.ren.AddActor(self.cloudActor2)
-        self.ren.AddActor(self.tempActor2)
-        self.ren.AddActor(self.pressActor2)
-
-        self.ren.AddActor(self.humidityActor3)
-        self.ren.AddActor(self.coneActor3)
-        self.ren.AddActor(self.cloudActor3)
-        self.ren.AddActor(self.tempActor3)
-        self.ren.AddActor(self.pressActor3)
-
-        self.ren.AddActor(self.humidityActor4)
-        self.ren.AddActor(self.coneActor4)
-        self.ren.AddActor(self.cloudActor4)
-        self.ren.AddActor(self.tempActor4)
-        self.ren.AddActor(self.pressActor4)
 
         self.render_window = vtk_widget.GetRenderWindow()
 
@@ -495,11 +515,14 @@ class Ui_MainWindow(QWidget):
 
         vbox2 = QVBoxLayout()
         vbox2.addLayout(hbox1)
-
+        vbox2.addLayout(hbox10)
         vbox2.addLayout(hbox3)
         vbox2.addLayout(hbox4)
         vbox2.addLayout(hbox5)
         vbox2.addLayout(hbox6)
+        vbox2.addLayout(hbox9)
+        vbox2.addLayout(hbox7)
+        vbox2.addLayout(hbox8)
 
         vbox2.addLayout(hbox2)
 

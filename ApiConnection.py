@@ -127,10 +127,87 @@ class MainWindow(Ui_MainWindow):
         self.initUI()
 
         self.pushButton.pressed.connect(self.update_weather)
+        self.button1.toggled.connect(self.checkBut1)
+        self.button2.toggled.connect(self.checkBut2)
+        self.button3.toggled.connect(self.checkBut3)
+        self.button4.toggled.connect(self.checkBut4)
+        self.button5.toggled.connect(self.checkBut5)
 
         self.threadpool = QThreadPool()
 
         self.show()
+
+    # checkbox methods
+
+    def checkBut1(self):
+        if self.button1.isChecked():
+            self.ren.AddActor(self.tempActor)
+            self.ren.AddActor(self.tempActor2)
+            self.ren.AddActor(self.tempActor3)
+            self.ren.AddActor(self.tempActor4)
+            self.render_window.Render()
+        else:
+            self.ren.RemoveActor(self.tempActor)
+            self.ren.RemoveActor(self.tempActor2)
+            self.ren.RemoveActor(self.tempActor3)
+            self.ren.RemoveActor(self.tempActor4)
+            self.render_window.Render()
+
+    def checkBut2(self):
+        if self.button2.isChecked():
+            self.ren.AddActor(self.pressActor)
+            self.ren.AddActor(self.pressActor2)
+            self.ren.AddActor(self.pressActor3)
+            self.ren.AddActor(self.pressActor4)
+            self.render_window.Render()
+        else:
+            self.ren.RemoveActor(self.pressActor)
+            self.ren.RemoveActor(self.pressActor2)
+            self.ren.RemoveActor(self.pressActor3)
+            self.ren.RemoveActor(self.pressActor4)
+            self.render_window.Render()
+
+    def checkBut3(self):
+        if self.button3.isChecked():
+            self.ren.AddActor(self.cloudActor)
+            self.ren.AddActor(self.cloudActor2)
+            self.ren.AddActor(self.cloudActor3)
+            self.ren.AddActor(self.cloudActor4)
+            self.render_window.Render()
+        else:
+            self.ren.RemoveActor(self.cloudActor)
+            self.ren.RemoveActor(self.cloudActor2)
+            self.ren.RemoveActor(self.cloudActor3)
+            self.ren.RemoveActor(self.cloudActor4)
+            self.render_window.Render()
+
+    def checkBut4(self):
+        if self.button4.isChecked():
+            self.ren.AddActor(self.coneActor)
+            self.ren.AddActor(self.coneActor2)
+            self.ren.AddActor(self.coneActor3)
+            self.ren.AddActor(self.coneActor4)
+            self.render_window.Render()
+        else:
+            self.ren.RemoveActor(self.coneActor)
+            self.ren.RemoveActor(self.coneActor2)
+            self.ren.RemoveActor(self.coneActor3)
+            self.ren.RemoveActor(self.coneActor4)
+            self.render_window.Render()
+
+    def checkBut5(self):
+        if self.button5.isChecked():
+            self.ren.AddActor(self.humidityActor)
+            self.ren.AddActor(self.humidityActor2)
+            self.ren.AddActor(self.humidityActor3)
+            self.ren.AddActor(self.humidityActor4)
+            self.render_window.Render()
+        else:
+            self.ren.RemoveActor(self.humidityActor)
+            self.ren.RemoveActor(self.humidityActor2)
+            self.ren.RemoveActor(self.humidityActor3)
+            self.ren.RemoveActor(self.humidityActor4)
+            self.render_window.Render()
 
 
     def alert(self, message):
